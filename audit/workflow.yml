@@ -1,0 +1,37 @@
+# PathCurator link-audit workflow — TEMPLATE.
+# Deploy into a *pathways* repo (the one holding manifest.json / pathways/<id>.json), NOT the app
+# repo: copy this file to .github/workflows/audit.yml and copy audit/audit.mjs alongside it. The
+# app's "connect a repo" flow can drop both in for you. It audits every URL server-side (real HTTP
+# status, no browser CSP) and commits audit/results.json, which the app merges on its next pull.
+name: PathCurator link audit
+on:
+  schedule:
+    - cron: '17 6 * * 1'   # weekly, Mondays 06:17 UTC
+  workflow_dispatch: {}     # + manual "Run workflow"
+permissions:
+  contents: write
+  issues: write            # notify.mjs opens/updates an Issue so GitHub emails repo watchers
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node audit/audit.mjs
+      - name: Notify (GitHub Issue) on broken links
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node audit/notify.mjs
+      # Use git status + add -A, NOT a `**/audit/results.json` pathspec: git's `**/` requires a
+      # directory segment, so it would NEVER match a root-level audit/results.json (the default,
+      # path='' single-workspace layout) and the Action would silently commit nothing.
+      - run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name 'pathcurator-audit'
+            git config user.email 'audit@users.noreply.github.com'
+            git add -A
+            git commit -m 'chore(audit): refresh link status'
+            git push
+          fi

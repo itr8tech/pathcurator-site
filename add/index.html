@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0969da">
+<!-- Same strict CSP as the app (this page handles untrusted captured content). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; base-uri 'none'; object-src 'none'; form-action 'self'">
+<link rel="manifest" href="/manifest.webmanifest">
+<title>Add to PathCurator</title>
+<script src="/src/ui/theme-guard.js"></script>
+<link rel="stylesheet" href="/src/ui/app.css">
+</head>
+<body>
+  <noscript><p class="noscript-notice" role="alert">Adding to PathCurator needs JavaScript.</p></noscript>
+
+  <header class="app-header">
+    <a class="brand" href="/">PathCurator</a>
+  </header>
+
+  <!-- The DB-free capture endpoint. add.js writes to the IndexedDB capture_outbox; the primary app
+       tab drains it into the inbox. NO SQLite worker is opened here. -->
+  <main id="add-view" class="app-main" tabindex="-1" aria-busy="true"></main>
+
+  <div id="live-polite" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module" src="/add/add.js"></script>
+</body>
+</html>

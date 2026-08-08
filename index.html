@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0969da">
+<!-- Strict CSP (meta — no server headers needed for host-anywhere). frame-ancestors can't live in a
+     meta CSP; ship it as X-Frame-Options via the host (serve.mjs). img-src includes blob: for header
+     images (attachments.js). script-src keeps 'wasm-unsafe-eval' so the SQLite worker instantiates. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; base-uri 'none'; object-src 'none'; form-action 'self'">
+<link rel="manifest" href="/manifest.webmanifest">
+<title>PathCurator</title>
+<!-- CLICKJACKING GUARD, FIRST: frame-ancestors is ignored in a meta CSP and GitHub Pages cannot send
+     X-Frame-Options, so on the production host this script is the only frame defence. Must run before
+     anything paints. -->
+<script src="/src/ui/frame-guard.js"></script>
+<!-- FIRST-PAINT THEME GUARD: plain blocking script (NOT module/defer) before the stylesheet → no FOUC.
+     Extracted to a file so the strict CSP (script-src 'self') needs no inline-script nonce/hash. -->
+<script src="/src/ui/theme-guard.js"></script>
+<link rel="stylesheet" href="/src/ui/app.css">
+</head>
+<body data-role="pending">
+  <a class="skip-link" href="#view">Skip to main content</a>
+
+  <noscript>
+    <p class="noscript-notice" role="alert">
+      PathCurator is a local-first app that stores your data in your browser with JavaScript and
+      WebAssembly (SQLite). It cannot run with JavaScript disabled. Please enable JavaScript.
+    </p>
+  </noscript>
+
+  <header class="app-header">
+    <a class="brand" href="#/">PathCurator</a>
+    <nav class="app-nav" aria-label="Primary">
+      <a href="#/">Dashboard</a>
+      <a href="#/inbox" id="nav-inbox" class="nav-inbox">Inbox<span id="inbox-badge" class="sync-badge" hidden aria-hidden="true"></span></a>
+      <a href="#/audit">Audit</a>
+      <a href="#/help">Help</a>
+      <a href="#/sync" id="nav-sync" class="nav-sync">Sync<span id="sync-badge" class="sync-badge" hidden aria-hidden="true"></span></a>
+    </nav>
+  </header>
+
+  <div id="role-banner" class="banner" role="status" hidden></div>
+
+  <!-- ONE persistent view region. Router replaces its CHILDREN only (stable aria-busy/focus target). -->
+  <main id="view" class="app-main" tabindex="-1" aria-busy="true"></main>
+
+  <footer class="app-footer">
+    <small>PathCurator v2 · local-first · 825db5d</small>
+    <button id="theme-toggle" class="btn" type="button">
+      <span class="theme-toggle__label">Theme</span>
+    </button>
+  </footer>
+
+  <!-- ONE announcer pair, owned by a11y.js; never removed/recreated. -->
+  <div id="live-polite"    class="visually-hidden" role="status" aria-live="polite"  aria-atomic="true"></div>
+  <div id="live-assertive" class="visually-hidden" role="alert"  aria-live="assertive" aria-atomic="true"></div>
+
+  <script type="module" src="/src/ui/main.js"></script>
+</body>
+</html>
