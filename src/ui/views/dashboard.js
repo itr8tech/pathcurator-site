@@ -5,6 +5,7 @@ import { openConnectRepo } from '../connect.js';
 import { syncRow } from '../sync-indicator.js';
 import { initReorder, reorderControls } from '../reorder.js';
 import { openImportDialog } from '../import-dialog.js';
+import { legacyRescueBanner } from '../legacy-rescue.js';
 import { downloadFile } from '../download.js';
 import { buildExportFile } from '/src/data/exchange.js';
 export default async function mount(container, params, ctx) {
@@ -57,6 +58,10 @@ export default async function mount(container, params, ctx) {
           (ev) => doExport('backup', null, ev.currentTarget)),
         fileInput));
     }
+    // v1 data sitting in this browser's IndexedDB (same origin, different app). Awaited rather than
+    // fired-and-forgotten so it can't land after a later refresh has already cleared the view.
+    const rescue = await legacyRescueBanner(ctx, refresh);
+    if (rescue) root.append(rescue);
     if (primary && (totalUn > 0 || anyConflict)) root.append(el('p', { class: 'sync-summary', role: 'status' },
       anyConflict ? 'Some workspaces have sync conflicts — pull to review.'
         : `${totalUn} uncommitted change${totalUn === 1 ? '' : 's'} across your workspaces.`));

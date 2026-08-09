@@ -131,6 +131,12 @@
 
   /* ===== P3 sync UI ===== */
   .dashboard-actions{ display:flex; flex-wrap:wrap; gap:var(--space-3); margin:var(--space-3) 0 var(--space-5); }
+  /* The v1-data rescue offer. Accent-tinted rather than warning-tinted: finding your old pathways
+     is good news, not a fault condition. */
+  .legacy-rescue{ display:grid; gap:var(--space-3);
+    border-color:color-mix(in srgb,var(--accent) 45%,var(--border));
+    background:color-mix(in srgb,var(--accent) 6%,var(--surface)); }
+  .legacy-rescue > h2{ font-size:var(--text-xl); margin:0; }
   .ws-conn{ font-size:.78rem; padding:.1em .5em; border:1px solid var(--border); border-radius:var(--radius-pill); white-space:nowrap; }
   .ws-conn.is-connected{ color:var(--text); }
   .ws-conn.is-disconnected{ color:var(--muted); font-style:italic; }
